@@ -1,0 +1,67 @@
+# bgt_calculator.py
+
+class BGTCalculator:
+    def __init__(self):
+        self.tvl = 0
+        self.staked_percentage = 0
+        self.user_share_percentage = 0
+        self.yearly_bgt_distribution = 0
+        self.gauge_capture_rate = 0
+        
+    def get_user_inputs(self):
+        """Get all necessary inputs from user"""
+        print("\n=== BGT Rewards Calculator ===\n")
+        
+        self.tvl = float(input("Enter HONEY-USDC TVL (in USD): "))
+        self.staked_percentage = float(input("Enter Staked in Gauge Vault percentage (e.g., 32.89): "))
+        self.user_share_percentage = float(input("Enter your total shares percentage (e.g., 0.50): "))
+        self.yearly_bgt_distribution = float(input("Enter estimated yearly BGT distribution: "))
+        self.gauge_capture_rate = float(input("Enter HONEY-USDC Gauge Vault BGT Capture rate percentage (e.g., 18): "))
+
+    def calculate_rewards(self):
+        """Calculate BGT rewards based on inputs"""
+        # Calculate total value staked in gauge
+        total_staked = self.tvl * (self.staked_percentage / 100)
+        
+        # Calculate user's share in USD
+        user_share_usd = total_staked * (self.user_share_percentage / 100)
+        
+        # Calculate yearly BGT distribution for HONEY-USDC
+        yearly_honey_usdc_bgt = self.yearly_bgt_distribution * (self.gauge_capture_rate / 100)
+        
+        # Calculate estimated BGT rate per year
+        estimated_bgt_year = (yearly_honey_usdc_bgt * user_share_usd) / total_staked
+        
+        # Calculate daily BGT rate
+        estimated_bgt_day = estimated_bgt_year / 365
+        
+        return {
+            'total_staked': total_staked,
+            'user_share_usd': user_share_usd,
+            'yearly_honey_usdc_bgt': yearly_honey_usdc_bgt,
+            'estimated_bgt_year': estimated_bgt_year,
+            'estimated_bgt_day': estimated_bgt_day
+        }
+
+    def display_results(self, results):
+        """Display calculation results"""
+        print("\n=== Results ===\n")
+        print(f"Total value Staked in Gauge: ${results['total_staked']:,.2f}")
+        print(f"Your total shares in USD: ${results['user_share_usd']:,.2f}")
+        print(f"Yearly BGT Distribution for HONEY-USDC: {results['yearly_honey_usdc_bgt']:,.2f} BGT")
+        print(f"Estimated BGT rate per year: {results['estimated_bgt_year']:,.2f} BGT")
+        print(f"Estimated BGT rate per day: {results['estimated_bgt_day']:,.2f} BGT")
+        
+        # Calculate and display multiplier
+        current_daily = 1000  # Current daily BGT earning
+        multiplier = current_daily / results['estimated_bgt_day']
+        print(f"\nMultiplier (based on 1000 BGT daily earning): {multiplier:.2f}x")
+
+def main():
+    calculator = BGTCalculator()
+    calculator.get_user_inputs()
+    results = calculator.calculate_rewards()
+    calculator.display_results(results)
+
+if __name__ == "__main__":
+    main()
